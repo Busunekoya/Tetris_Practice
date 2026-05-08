@@ -22,6 +22,7 @@ public class SetTiles : MonoBehaviour
             {
                 GameObject tile = Instantiate(tilePrefab, ariaObject.TransformPoint(-5+x, -10+y, 0), Quaternion.identity);
                 tile.transform.parent = ariaObject;
+                tile.GetComponent<TetTile>().position = new Vector2Int(x, y);
             }
         }
     }
