@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+//参考: https://masavlog.com/programming/tetris/unity-tetris-3/
 public class GameManager : MonoBehaviour
 {
     public GameObject[] MinoPrefabs = new GameObject[7];
