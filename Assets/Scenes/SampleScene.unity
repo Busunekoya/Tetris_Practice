@@ -375,6 +375,8 @@ MonoBehaviour:
   - {fileID: 6143182347006940209, guid: c909062aa1c5b1242a0b11a9fb7d0d49, type: 3}
   - {fileID: 4061935803341540290, guid: 71c8141bf9cfa474e840e62850feaa35, type: 3}
   - {fileID: 8474979131993501300, guid: 041c6309a84e0ff41a9e4293c34c2cb1, type: 3}
+  defaultMinoPosition: {x: 0, y: 9}
+  playing: 1
 --- !u!1 &1594635941
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,7 +387,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1594635942}
   - component: {fileID: 1594635943}
-  - component: {fileID: 1594635944}
   m_Layer: 0
   m_Name: BackGround
   m_TagString: Untagged
@@ -460,19 +461,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1594635944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1594635941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b6dcfee6ba9f824fb9b3f5f364b6a31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MinoPrefabs: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
