@@ -177,6 +177,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4508549781761471188}
+  - component: {fileID: -8656121573443878737}
   m_Layer: 0
   m_Name: Imino
   m_TagString: Untagged
@@ -203,6 +204,18 @@ Transform:
   - {fileID: 6049385384194365884}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-8656121573443878737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8009342449210983623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 106f60b477e685046b6830873a9ca64f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8810301865600373485
 GameObject:
   m_ObjectHideFlags: 0
