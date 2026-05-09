@@ -375,7 +375,7 @@ MonoBehaviour:
   - {fileID: 6143182347006940209, guid: c909062aa1c5b1242a0b11a9fb7d0d49, type: 3}
   - {fileID: 4061935803341540290, guid: 71c8141bf9cfa474e840e62850feaa35, type: 3}
   - {fileID: 8474979131993501300, guid: 041c6309a84e0ff41a9e4293c34c2cb1, type: 3}
-  defaultMinoPosition: {x: 0, y: 9}
+  defaultMinoPosition: {x: 0, y: 8}
   playing: 1
 --- !u!1 &1594635941
 GameObject:

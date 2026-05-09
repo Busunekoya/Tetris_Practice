@@ -32,10 +32,10 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            currentMino.transform.position += AddMinoMove(-1, 0);
+            if(isMoveAble(currentMino, AddMinoMove(-1, 0)))currentMino.transform.position += AddMinoMove(-1, 0);
         }else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            currentMino.transform.position += AddMinoMove(1, 0);
+            if(isMoveAble(currentMino, AddMinoMove(1, 0)))currentMino.transform.position += AddMinoMove(1, 0);
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -50,12 +50,12 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            currentMino.transform.Rotate(0, 0, -90);
+            if(isRotateAble(currentMino, -90))currentMino.transform.Rotate(0, 0, -90);
         }
     }
-    Vector3 AddMinoMove(int x, int y)
+    Vector3Int AddMinoMove(int x, int y)
     {
-        return new Vector3(x, y, 0);
+        return new Vector3Int(x, y, 0);
     }
     void MinoFall()
     {
@@ -63,12 +63,52 @@ public class GameManager : MonoBehaviour
 
         if(fallTimer >= fallTime)
         {
-            currentMino.transform.position += AddMinoMove(0, -1);
+            if(isMoveAble(currentMino, AddMinoMove(0, -1)))currentMino.transform.position += AddMinoMove(0, -1);
             fallTimer = fallTimer % fallTime;
         }
         else
         {
             fallTimer += Time.deltaTime;
+        }
+    }
+    // Minoがステージ内に収まっているかの判定
+    bool isMoveAble(GameObject minoObject, Vector3Int move)
+    {
+        Mino mino = minoObject.GetComponent<Mino>();
+        if(mino == null)return false;
+        else
+        {
+            int roundX = Mathf.RoundToInt(minoObject.transform.position.x);
+            int roundY = Mathf.RoundToInt(minoObject.transform.position.y);
+            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
+            {
+                if(roundX + minoBlock.position.x + move.x < -5 || roundX + minoBlock.position.x + move.x >= 5 || roundY + minoBlock.position.y + move.y < -10)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    bool isRotateAble(GameObject minoObject, int angle)
+    {
+        Mino mino = minoObject.GetComponent<Mino>();
+        if(mino == null)return false;
+        else
+        {
+            int roundX = Mathf.RoundToInt(minoObject.transform.position.x);
+            int roundY = Mathf.RoundToInt(minoObject.transform.position.y);
+            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
+            {
+                Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
+                if(roundX + rotatePosition.x < -5 || roundX + rotatePosition.x >= 5 || roundY + rotatePosition.y < -10)
+                {
+                    return false;
+                }
+            }
+            mino.AddAngle(angle);
+            Debug.Log(mino.angle);
+            return true;
         }
     }
 }
