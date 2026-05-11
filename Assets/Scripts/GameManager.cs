@@ -12,9 +12,13 @@ public class GameManager : MonoBehaviour
     public bool playing = true;
     private float fallTime = 1f;
     private float fallTimer = 0f;
+    void Awake()
+    {
+        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
+    }
     void Start()
     {
-        currentMino = Instantiate(MinoPrefabs[1], defaultMinoPosition, Quaternion.identity);
+        SetNextMino();
     }
     void Update()
     {
@@ -26,7 +30,7 @@ public class GameManager : MonoBehaviour
     {
         if(currentMino != null)return;
         currentMino = nextMino;
-        nextMino = null;
+        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
     }
     void MinoMovement()
     {
@@ -64,6 +68,12 @@ public class GameManager : MonoBehaviour
         if(fallTimer >= fallTime)
         {
             if(isMoveAble(currentMino, AddMinoMove(0, -1)))currentMino.transform.position += AddMinoMove(0, -1);
+            else
+            {
+                //ミノが落ちきったときの処理
+                currentMino = null;
+                SetNextMino();
+            }
             fallTimer = fallTimer % fallTime;
         }
         else
@@ -82,7 +92,8 @@ public class GameManager : MonoBehaviour
             int roundY = Mathf.RoundToInt(minoObject.transform.position.y);
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
-                if(roundX + minoBlock.position.x + move.x < -5 || roundX + minoBlock.position.x + move.x >= 5 || roundY + minoBlock.position.y + move.y < -10)
+                Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
+                if(roundX + rotatePosition.x + move.x < -5 || roundX + rotatePosition.x + move.x >= 5 || roundY + rotatePosition.y + move.y < -10)
                 {
                     return false;
                 }
