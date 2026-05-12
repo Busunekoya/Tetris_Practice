@@ -8,15 +8,15 @@ public class TetTile : MonoBehaviour
     /// タイルの座標
     /// </summary>
     public Vector2Int position;
-    // Start is called before the first frame update
-    void Start()
+    public bool isFilled{get;set;} = false;
+    public void FillTile()
     {
-        
+        if(isFilled)Debug.LogWarning($"Tile {position} is already filled.");
+        isFilled = true;
     }
-
-    // Update is called once per frame
-    void Update()
+    public void ClearTile()
     {
-        
+        if(!isFilled)Debug.LogWarning($"Tile {position} is already clear.");
+        isFilled = false;
     }
 }

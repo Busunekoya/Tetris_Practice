@@ -6,7 +6,7 @@ public class Mino : MonoBehaviour
 {
     public MinoType minoType;
     public int angle{get;set;} = 0;
-
+    public Vector2Int[] positions{get;set;} = new Vector2Int[4];
     public void AddAngle(int addAngle)
     {
         angle = (360 + angle + addAngle) % 360;

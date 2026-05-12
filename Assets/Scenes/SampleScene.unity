@@ -525,7 +525,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tilePrefab: {fileID: 1151781388250065785, guid: e06cc8c2e50035b4dae3fea75b2e2187, type: 3}
-  gameManager: {fileID: 1107995110}
 --- !u!114 &1107995110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,6 +548,7 @@ MonoBehaviour:
   NextMinoPos: {fileID: 1312683816}
   defaultMinoPosition: {x: -5, y: 8}
   playing: 1
+  setTiles: {fileID: 1107995109}
 --- !u!1 &1312683815
 GameObject:
   m_ObjectHideFlags: 0

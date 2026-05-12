@@ -10,6 +10,7 @@ public class SetTiles : MonoBehaviour
     /// </summary>
     [SerializeField] private GameObject tilePrefab;
     private Transform ariaObject;
+    public TetTile[,] tiles{get;set;} = new TetTile[10 , 20];
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +24,7 @@ public class SetTiles : MonoBehaviour
                 GameObject tile = Instantiate(tilePrefab, ariaObject.TransformPoint(-5+x, -10+y, 0), Quaternion.identity);
                 tile.transform.parent = ariaObject;
                 tile.GetComponent<TetTile>().position = new Vector2Int(x, y);
+                tiles[x, y] = tile.GetComponent<TetTile>();
             }
         }
     }
