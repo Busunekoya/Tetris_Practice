@@ -8,13 +8,18 @@ public class GameManager : MonoBehaviour
     private GameObject currentMino;
     private GameObject nextMino;
     private GameObject holdMino;
+    public Transform NextMinoPos;
     public Vector2 defaultMinoPosition;
     public bool playing = true;
     private float fallTime = 1f;
     private float fallTimer = 0f;
+    public int Xmin{get; set;}
+    public int Xmax{get; set;}
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
+        Xmin = Mathf.FloorToInt(defaultMinoPosition.x - 5);
+        Xmax = Mathf.FloorToInt(defaultMinoPosition.x + 5);
     }
     void Start()
     {
@@ -30,7 +35,9 @@ public class GameManager : MonoBehaviour
     {
         if(currentMino != null)return;
         currentMino = nextMino;
-        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
+        currentMino.transform.parent = null;
+        currentMino.transform.position = defaultMinoPosition;
+        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
     }
     void MinoMovement()
     {
@@ -93,7 +100,7 @@ public class GameManager : MonoBehaviour
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
-                if(roundX + rotatePosition.x + move.x < -5 || roundX + rotatePosition.x + move.x >= 5 || roundY + rotatePosition.y + move.y < -10)
+                if(roundX + rotatePosition.x + move.x < Xmin || roundX + rotatePosition.x + move.x >= Xmax || roundY + rotatePosition.y + move.y < -10)
                 {
                     return false;
                 }
@@ -112,7 +119,7 @@ public class GameManager : MonoBehaviour
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
-                if(roundX + rotatePosition.x < -5 || roundX + rotatePosition.x >= 5 || roundY + rotatePosition.y < -10)
+                if(roundX + rotatePosition.x < Xmin || roundX + rotatePosition.x >= Xmax || roundY + rotatePosition.y < -10)
                 {
                     return false;
                 }
