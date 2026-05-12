@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
             if(isMoveAble(currentMino, AddMinoMove(0, -1)))currentMino.transform.position += AddMinoMove(0, -1);
             else
             {
+                AddToTile(currentMino);
                 //ミノが落ちきったときの処理
                 currentMino = null;
                 SetNextMino();
@@ -154,6 +155,7 @@ public class GameManager : MonoBehaviour
     bool ValidMovement(Vector2Int blockPos)
     {
         if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)return false;
+        if(setTiles.tiles[blockPos.x - Xmin, blockPos.y - Ymin].isFilled)return false;
         else return true;
     }
     void AddToTile(GameObject minoObject)
