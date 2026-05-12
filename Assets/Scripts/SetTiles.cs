@@ -12,7 +12,7 @@ public class SetTiles : MonoBehaviour
     private Transform ariaObject;
     public TetTile[,] tiles{get;set;} = new TetTile[10 , 20];
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         //ariaObjectにこのゲームオブジェクトのTransformを代入
         ariaObject = this.gameObject.transform;

@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + roundPos + movePos;
                 //Debug.Log($"{roundX + rotatePosition.x - Xmin}, {roundY + rotatePosition.y - Ymin}");
-                if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)
+                if(!ValidMovement(blockPos))
                 {
                     return false;
                 }
@@ -133,14 +133,14 @@ public class GameManager : MonoBehaviour
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + roundPos;
-                if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)
+                if(!ValidMovement(blockPos))
                 {
                     return false;
                 }
             }
 
             mino.AddAngle(angle);
-            
+
             for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
@@ -151,8 +151,22 @@ public class GameManager : MonoBehaviour
             return true;
         }
     }
-    void AddToTile()
+    bool ValidMovement(Vector2Int blockPos)
     {
-        
+        if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)return false;
+        else return true;
+    }
+    void AddToTile(GameObject minoObject)
+    {
+        Mino mino = minoObject.GetComponent<Mino>();
+        if(mino == null)
+        {
+            Debug.LogError("Mino component not found");
+            return;
+        }
+        foreach(Vector2Int position in mino.positions)
+        {
+            setTiles.tiles[position.x, position.y].FillTile();
+        }
     }
 }
