@@ -13,17 +13,21 @@ public class GameManager : MonoBehaviour
     public bool playing = true;
     private float fallTime = 1f;
     private float fallTimer = 0f;
-    public int Xmin{get; set;}
-    public int Xmax{get; set;}
-    public int Ymin{get; set;} = -10;
-    private Vector2Int minPos;
+    private Vector2Int firstTilePos = new Vector2Int(5, 18);
+    private Vector2Int currentMinoPos;
+    //public float Xmin{get; set;}
+    //public float Xmax{get; set;}
+    //public float Ymin{get; set;} = -10;
+    private Vector2 minPos;
+    private Vector2 maxPos;
     public SetTiles setTiles;
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
-        Xmin = Mathf.FloorToInt(defaultMinoPosition.x - (setTiles.xSize / 2));
-        Xmax = Mathf.FloorToInt(defaultMinoPosition.x + (setTiles.xSize / 2));
-        minPos = new Vector2Int(Xmin, Ymin);
+        //Xmin = Mathf.FloorToInt(defaultMinoPosition.x - (setTiles.xSize / 2));
+        //Xmax = Mathf.FloorToInt(defaultMinoPosition.x + (setTiles.xSize / 2));
+        minPos = setTiles.tilePosition(0, 0);
+        maxPos = setTiles.tilePosition(setTiles.xSize - 1, setTiles.ySize - 1);
     }
     void Start()
     {
@@ -40,17 +44,24 @@ public class GameManager : MonoBehaviour
         if(currentMino != null)return;
         currentMino = nextMino;
         currentMino.transform.parent = null;
-        currentMino.transform.position = setTiles.tiles[5,18].transform.position;
+        currentMinoPos = firstTilePos;
+        currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
     }
     void MinoMovement()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if(isMoveAble(currentMino, AddMinoMove(-1, 0)))currentMino.transform.position += AddMinoMove(-1, 0);
+            if(isMoveAble(AddMinoMove(-1, 0)))
+            {
+                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+            }
         }else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if(isMoveAble(currentMino, AddMinoMove(1, 0)))currentMino.transform.position += AddMinoMove(1, 0);
+            if(isMoveAble(AddMinoMove(1, 0)))
+            {
+                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+            }
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -65,12 +76,16 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if(isRotateAble(currentMino, -90))currentMino.transform.Rotate(0, 0, -90);
+            if(isRotateAble(-90))currentMino.transform.Rotate(0, 0, -90);
         }
     }
-    Vector3Int AddMinoMove(int x, int y)
+    Vector2Int AddMinoMove(int x, int y)
     {
-        return new Vector3Int(x, y, 0);
+        return AddMinoMove(new Vector2Int(x,y));
+    }
+    Vector2Int AddMinoMove(Vector2Int move)
+    {
+        return move;
     }
     void MinoFall()
     {
@@ -78,7 +93,10 @@ public class GameManager : MonoBehaviour
 
         if(fallTimer >= fallTime)
         {
-            if(isMoveAble(currentMino, AddMinoMove(0, -1)))currentMino.transform.position += AddMinoMove(0, -1);
+            if(isMoveAble(AddMinoMove(0, -1)))
+            {
+                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+            }
             else
             {
                 AddToTile(currentMino);
@@ -95,20 +113,21 @@ public class GameManager : MonoBehaviour
         }
     }
     // Minoがステージ内に収まっているかの判定
-    bool isMoveAble(GameObject minoObject, Vector3Int move)
+    bool isMoveAble(Vector2Int move)
     {
-        Mino mino = minoObject.GetComponent<Mino>();
+        Mino mino = currentMino.GetComponent<Mino>();
         if(mino == null)return false;
         else
         {
-            Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
-            Vector2Int movePos = new Vector2Int(move.x, move.y);
+            //Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
+            //Vector2Int movePos = new Vector2Int(move.x, move.y);
             //int roundX = Mathf.RoundToInt(minoObject.transform.position.x);
             //int roundY = Mathf.RoundToInt(minoObject.transform.position.y);
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
-                Vector2Int blockPos = rotatePosition + roundPos + movePos;
+                Vector2Int blockPos = rotatePosition + currentMinoPos + move;
+                Debug.Log(blockPos);
                 //Debug.Log($"{roundX + rotatePosition.x - Xmin}, {roundY + rotatePosition.y - Ymin}");
                 if(!ValidMovement(blockPos))
                 {
@@ -118,9 +137,10 @@ public class GameManager : MonoBehaviour
             for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
-                Vector2Int blockPos = rotatePosition + roundPos + movePos - minPos;
+                Vector2Int blockPos = rotatePosition + currentMinoPos + move;// - minPos;
                 mino.positions[i] = blockPos;
             }
+            currentMinoPos += move;
             return true;
         }
     }
@@ -167,17 +187,17 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    bool isRotateAble(GameObject minoObject, int angle)
+    bool isRotateAble(int angle)
     {
-        Mino mino = minoObject.GetComponent<Mino>();
+        Mino mino = currentMino.GetComponent<Mino>();
         if(mino == null)return false;
         else
         {
-            Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
+            //Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
-                Vector2Int blockPos = rotatePosition + roundPos;
+                Vector2Int blockPos = rotatePosition + currentMinoPos;
                 if(!ValidMovement(blockPos))
                 {
                     return false;
@@ -189,7 +209,7 @@ public class GameManager : MonoBehaviour
             for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
-                Vector2Int blockPos = rotatePosition + roundPos - minPos;
+                Vector2Int blockPos = rotatePosition + currentMinoPos; // - minPos;
                 mino.positions[i] = blockPos;
             }
             //Debug.Log(mino.angle);
@@ -198,8 +218,8 @@ public class GameManager : MonoBehaviour
     }
     bool ValidMovement(Vector2Int blockPos)
     {
-        if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)return false;
-        if(setTiles.tiles[blockPos.x - Xmin, blockPos.y - Ymin].tile != null)return false;
+        if(blockPos.x < 0 || blockPos.x >= setTiles.xSize || blockPos.y < 0 /*|| blockPos.y >= setTiles.ySize*/)return false;
+        if(setTiles.tiles[blockPos.x, blockPos.y].tile != null)return false;
         else return true;
     }
     void AddToTile(GameObject minoObject)

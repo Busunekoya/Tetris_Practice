@@ -29,4 +29,12 @@ public class SetTiles : MonoBehaviour
             }
         }
     }
+    public Vector2 tilePosition(Vector2Int pos)
+    {
+        return tilePosition(pos.x,pos.y);
+    }
+    public Vector2 tilePosition(int x, int y)
+    {
+        return tiles[x, y].transform.position;
+    }
 }
