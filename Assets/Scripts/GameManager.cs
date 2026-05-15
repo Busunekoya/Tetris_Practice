@@ -21,8 +21,8 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
-        Xmin = Mathf.FloorToInt(defaultMinoPosition.x - 5);
-        Xmax = Mathf.FloorToInt(defaultMinoPosition.x + 5);
+        Xmin = Mathf.FloorToInt(defaultMinoPosition.x - (setTiles.xSize / 2));
+        Xmax = Mathf.FloorToInt(defaultMinoPosition.x + (setTiles.xSize / 2));
         minPos = new Vector2Int(Xmin, Ymin);
     }
     void Start()
@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
     bool ValidMovement(Vector2Int blockPos)
     {
         if(blockPos.x < Xmin || blockPos.x >= Xmax || blockPos.y < Ymin)return false;
-        if(setTiles.tiles[blockPos.x - Xmin, blockPos.y - Ymin].isFilled)return false;
+        if(setTiles.tiles[blockPos.x - Xmin, blockPos.y - Ymin].tile != null)return false;
         else return true;
     }
     void AddToTile(GameObject minoObject)
@@ -166,9 +166,13 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Mino component not found");
             return;
         }
-        foreach(Vector2Int position in mino.positions)
+        for(int i = 0; i < mino.transform.childCount; i++)
+        {
+            setTiles.tiles[mino.positions[i].x,mino.positions[i].y].FillTile(mino.transform.GetChild(i).gameObject);
+        }
+        /*foreach(Vector2Int position in mino.positions)
         {
             setTiles.tiles[position.x, position.y].FillTile();
-        }
+        }*/
     }
 }
