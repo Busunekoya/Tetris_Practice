@@ -15,19 +15,16 @@ public class GameManager : MonoBehaviour
     private float fallTimer = 0f;
     private Vector2Int firstTilePos = new Vector2Int(5, 18);
     private Vector2Int currentMinoPos;
-    //public float Xmin{get; set;}
-    //public float Xmax{get; set;}
-    //public float Ymin{get; set;} = -10;
-    private Vector2 minPos;
-    private Vector2 maxPos;
+    //private Vector2 minPos;
+    //private Vector2 maxPos;
     public SetTiles setTiles;
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
         //Xmin = Mathf.FloorToInt(defaultMinoPosition.x - (setTiles.xSize / 2));
         //Xmax = Mathf.FloorToInt(defaultMinoPosition.x + (setTiles.xSize / 2));
-        minPos = setTiles.tilePosition(0, 0);
-        maxPos = setTiles.tilePosition(setTiles.xSize - 1, setTiles.ySize - 1);
+        //minPos = setTiles.tilePosition(0, 0);
+        //maxPos = setTiles.tilePosition(setTiles.xSize - 1, setTiles.ySize - 1);
     }
     void Start()
     {
@@ -119,16 +116,11 @@ public class GameManager : MonoBehaviour
         if(mino == null)return false;
         else
         {
-            //Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
-            //Vector2Int movePos = new Vector2Int(move.x, move.y);
-            //int roundX = Mathf.RoundToInt(minoObject.transform.position.x);
-            //int roundY = Mathf.RoundToInt(minoObject.transform.position.y);
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + currentMinoPos + move;
                 Debug.Log(blockPos);
-                //Debug.Log($"{roundX + rotatePosition.x - Xmin}, {roundY + rotatePosition.y - Ymin}");
                 if(!ValidMovement(blockPos))
                 {
                     return false;
@@ -183,7 +175,7 @@ public class GameManager : MonoBehaviour
             {
                 setTiles.tiles[i,j].tile = setTiles.tiles[i,j+1].tile;
                 setTiles.tiles[i,j+1].tile = null;
-                if(setTiles.tiles[i,j].tile != null)setTiles.tiles[i,j].tile.transform.position = setTiles.tiles[i,j].transform.position;
+                if(setTiles.tiles[i,j].tile != null)setTiles.tiles[i,j].tile.transform.position = setTiles.tilePosition(i, j); //tiles[i,j].transform.position;
             }
         }
     }
@@ -193,7 +185,6 @@ public class GameManager : MonoBehaviour
         if(mino == null)return false;
         else
         {
-            //Vector2Int roundPos = new Vector2Int(Mathf.RoundToInt(minoObject.transform.position.x), Mathf.RoundToInt(minoObject.transform.position.y));
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
@@ -209,16 +200,15 @@ public class GameManager : MonoBehaviour
             for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
-                Vector2Int blockPos = rotatePosition + currentMinoPos; // - minPos;
+                Vector2Int blockPos = rotatePosition + currentMinoPos;
                 mino.positions[i] = blockPos;
             }
-            //Debug.Log(mino.angle);
             return true;
         }
     }
     bool ValidMovement(Vector2Int blockPos)
     {
-        if(blockPos.x < 0 || blockPos.x >= setTiles.xSize || blockPos.y < 0 /*|| blockPos.y >= setTiles.ySize*/)return false;
+        if(blockPos.x < 0 || blockPos.x >= setTiles.xSize || blockPos.y < 0 )return false;
         if(setTiles.tiles[blockPos.x, blockPos.y].tile != null)return false;
         else return true;
     }
