@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 AddToTile(currentMino);
+                CheckLines();
                 //ミノが落ちきったときの処理
                 currentMino = null;
                 SetNextMino();
@@ -121,6 +122,49 @@ public class GameManager : MonoBehaviour
                 mino.positions[i] = blockPos;
             }
             return true;
+        }
+    }
+    private void CheckLines()
+    {
+        for(int i = 0; i < setTiles.ySize; i++)
+        {
+            if (HasLine(i))
+            {
+                DeleteLine(i);
+                RowDown(i);
+                i--;
+            }
+        }
+    }
+    private bool HasLine(int y)
+    {
+        for(int x = 0; x < setTiles.xSize; x++)
+        {
+            if(setTiles.tiles[x, y].tile == null)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    private void DeleteLine(int y)
+    {
+        for(int x = 0; x < setTiles.xSize; x++)
+        {
+            Destroy(setTiles.tiles[x, y].tile);
+            setTiles.tiles[x, y].tile = null;
+        }
+    }
+    private void RowDown(int y)
+    {
+        for(int i = 0; i < setTiles.xSize; i++)
+        {
+            for(int j = y; j < setTiles.ySize-1; j++)
+            {
+                setTiles.tiles[i,j].tile = setTiles.tiles[i,j+1].tile;
+                setTiles.tiles[i,j+1].tile = null;
+                if(setTiles.tiles[i,j].tile != null)setTiles.tiles[i,j].tile.transform.position = setTiles.tiles[i,j].transform.position;
+            }
         }
     }
     bool isRotateAble(GameObject minoObject, int angle)
