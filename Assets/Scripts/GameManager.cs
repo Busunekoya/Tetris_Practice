@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     //private Vector2 minPos;
     //private Vector2 maxPos;
     public SetTiles setTiles;
+    [SerializeField]private Transform FallenMinos;
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
@@ -121,7 +122,6 @@ public class GameManager : MonoBehaviour
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + currentMinoPos + move;
-                Debug.Log(blockPos);
                 if(!ValidMovement(blockPos))
                 {
                     return false;
@@ -142,14 +142,20 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void CheckLines()
     {
+        bool isDelete = false;
         for(int i = 0; i < setTiles.ySize; i++)
         {
             if (HasLine(i))
             {
+                isDelete = true;
                 DeleteLine(i);
                 RowDown(i);
                 i--;
             }
+        }
+        if (isDelete)
+        {
+            DeleatEmptyObject();
         }
     }
     /// <summary>
@@ -178,6 +184,17 @@ public class GameManager : MonoBehaviour
         {
             Destroy(setTiles.tiles[x, y].tile);
             setTiles.tiles[x, y].tile = null;
+        }
+    }
+    private void DeleatEmptyObject()
+    {
+        foreach(Transform child in FallenMinos)
+        {
+            //Debug.Log($"Deleting child: {child.name},{child.childCount}");
+            if(child.childCount <= 0)
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
     /// <summary>
@@ -251,5 +268,6 @@ public class GameManager : MonoBehaviour
         {
             setTiles.tiles[mino.positions[i].x,mino.positions[i].y].FillTile(mino.transform.GetChild(i).gameObject);
         }
+        minoObject.transform.SetParent(FallenMinos);
     }
 }
