@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         if(currentMino != null)return;
         currentMino = nextMino;
         currentMino.transform.parent = null;
-        currentMino.transform.position = defaultMinoPosition;
+        currentMino.transform.position = setTiles.tiles[5,18].transform.position;
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
     }
     void MinoMovement()
@@ -214,9 +214,5 @@ public class GameManager : MonoBehaviour
         {
             setTiles.tiles[mino.positions[i].x,mino.positions[i].y].FillTile(mino.transform.GetChild(i).gameObject);
         }
-        /*foreach(Vector2Int position in mino.positions)
-        {
-            setTiles.tiles[position.x, position.y].FillTile();
-        }*/
     }
 }
