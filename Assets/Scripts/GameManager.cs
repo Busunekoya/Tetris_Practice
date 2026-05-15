@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
         MinoRotation();
         MinoFall();
     }
+    /// <summary>
+    /// 次のミノを設定する
+    /// </summary>
     void SetNextMino()
     {
         if(currentMino != null)return;
@@ -45,17 +48,20 @@ public class GameManager : MonoBehaviour
         currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
     }
+    /// <summary>
+    /// ミノの移動
+    /// </summary>
     void MinoMovement()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if(isMoveAble(AddMinoMove(-1, 0)))
+            if(isMoveAble(new Vector2Int(-1,0)))
             {
                 currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
             }
         }else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if(isMoveAble(AddMinoMove(1, 0)))
+            if(isMoveAble(new Vector2Int(1, 0)))
             {
                 currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
             }
@@ -69,6 +75,9 @@ public class GameManager : MonoBehaviour
             fallTime = 1f;
         }
     }
+    /// <summary>
+    /// ミノの回転
+    /// </summary>
     void MinoRotation()
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -76,21 +85,13 @@ public class GameManager : MonoBehaviour
             if(isRotateAble(-90))currentMino.transform.Rotate(0, 0, -90);
         }
     }
-    Vector2Int AddMinoMove(int x, int y)
-    {
-        return AddMinoMove(new Vector2Int(x,y));
-    }
-    Vector2Int AddMinoMove(Vector2Int move)
-    {
-        return move;
-    }
     void MinoFall()
     {
         if(!playing)return;
 
         if(fallTimer >= fallTime)
         {
-            if(isMoveAble(AddMinoMove(0, -1)))
+            if(isMoveAble(new Vector2Int(0, -1)))
             {
                 currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
             }
@@ -136,6 +137,9 @@ public class GameManager : MonoBehaviour
             return true;
         }
     }
+    /// <summary>
+    /// 行が揃ったかを確かめる
+    /// </summary>
     private void CheckLines()
     {
         for(int i = 0; i < setTiles.ySize; i++)
@@ -148,6 +152,11 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 指定された行にブロックが並んでいるかを確認する
+    /// </summary>
+    /// <param name="y">確認する行</param>
+    /// <returns></returns>
     private bool HasLine(int y)
     {
         for(int x = 0; x < setTiles.xSize; x++)
@@ -159,6 +168,10 @@ public class GameManager : MonoBehaviour
         }
         return true;
     }
+    /// <summary>
+    /// 行を消す
+    /// </summary>
+    /// <param name="y">消す行</param>
     private void DeleteLine(int y)
     {
         for(int x = 0; x < setTiles.xSize; x++)
@@ -167,6 +180,10 @@ public class GameManager : MonoBehaviour
             setTiles.tiles[x, y].tile = null;
         }
     }
+    /// <summary>
+    /// 行を下にずらす
+    /// </summary>
+    /// <param name="y">消した行</param>
     private void RowDown(int y)
     {
         for(int i = 0; i < setTiles.xSize; i++)
@@ -179,6 +196,11 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// 回転可能か確かめる
+    /// </summary>
+    /// <param name="angle">回転角度</param>
+    /// <returns></returns>
     bool isRotateAble(int angle)
     {
         Mino mino = currentMino.GetComponent<Mino>();
@@ -206,6 +228,11 @@ public class GameManager : MonoBehaviour
             return true;
         }
     }
+    /// <summary>
+    /// 指定された位置にミノを移動できるかを確認する
+    /// </summary>
+    /// <param name="blockPos">確認する位置</param>
+    /// <returns></returns>
     bool ValidMovement(Vector2Int blockPos)
     {
         if(blockPos.x < 0 || blockPos.x >= setTiles.xSize || blockPos.y < 0 )return false;
