@@ -7,10 +7,12 @@ public class GameManager : MonoBehaviour
     public GameObject[] MinoPrefabs = new GameObject[7];
     private GameObject currentMino;
     private GameObject nextMino;
-    private GameObject holdMino;
+    private GameObject holdMino = null;
     public Transform NextMinoPos;
+    public Transform HoldMinoPos;
     public Vector2 defaultMinoPosition;
     public bool playing = true;
+    private bool holdable = true;
     private float fallTime = 1f;
     private float fallTimer = 0f;
     private Vector2Int firstTilePos = new Vector2Int(5, 18);
@@ -43,11 +45,33 @@ public class GameManager : MonoBehaviour
     void SetNextMino()
     {
         if(currentMino != null)return;
-        currentMino = nextMino;
+        SetCurrentMino(nextMino);
+        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
+    }
+    void SetCurrentMino(GameObject mino)
+    {
+        currentMino = mino;
         currentMino.transform.parent = null;
         currentMinoPos = firstTilePos;
         currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
-        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
+    }
+    void SwitchMino()
+    {
+        if(!holdable || currentMino == null) return;
+        holdable = false;
+        GameObject tempMino = holdMino;
+        holdMino = currentMino;
+        holdMino.transform.SetParent(HoldMinoPos);
+        holdMino.transform.position = HoldMinoPos.TransformPoint(Vector3.zero);
+        currentMino = tempMino;
+        if(currentMino != null)
+        {
+            SetCurrentMino(currentMino);
+        }
+        else
+        {
+            SetNextMino();
+        }
     }
     /// <summary>
     /// ミノの移動
@@ -74,6 +98,10 @@ public class GameManager : MonoBehaviour
         else
         {
             fallTime = 1f;
+        }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            SwitchMino();
         }
     }
     /// <summary>
@@ -103,6 +131,10 @@ public class GameManager : MonoBehaviour
                 //ミノが落ちきったときの処理
                 currentMino = null;
                 SetNextMino();
+                if(!holdable)
+                {
+                    holdable = true;
+                }
             }
             fallTimer = fallTimer % fallTime;
         }
