@@ -48,6 +48,16 @@ public class GameManager : MonoBehaviour
         currentMino.transform.parent = null;
         currentMinoPos = firstTilePos;
         currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+
+        if (!isMoveAble(Vector2Int.zero))
+        {
+            GameOver();
+        }
+    }
+    void GameOver()
+    {
+        playing = false;
+        Debug.Log("Game Over");
     }
     void SwitchMino()
     {
