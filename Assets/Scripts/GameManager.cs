@@ -17,17 +17,11 @@ public class GameManager : MonoBehaviour
     private float fallTimer = 0f;
     private Vector2Int firstTilePos = new Vector2Int(5, 18);
     private Vector2Int currentMinoPos;
-    //private Vector2 minPos;
-    //private Vector2 maxPos;
     public SetTiles setTiles;
     [SerializeField]private Transform FallenMinos;
     void Awake()
     {
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
-        //Xmin = Mathf.FloorToInt(defaultMinoPosition.x - (setTiles.xSize / 2));
-        //Xmax = Mathf.FloorToInt(defaultMinoPosition.x + (setTiles.xSize / 2));
-        //minPos = setTiles.tilePosition(0, 0);
-        //maxPos = setTiles.tilePosition(setTiles.xSize - 1, setTiles.ySize - 1);
     }
     void Start()
     {
