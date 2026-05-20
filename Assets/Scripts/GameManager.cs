@@ -13,14 +13,18 @@ public class GameManager : MonoBehaviour
     public Vector2 defaultMinoPosition;
     public bool playing = true;
     private bool holdable = true;
+    private float rawfallTime = 1f;
+    private float rawfalldownTime = 0.1f;
     private float fallTime = 1f;
     private float fallTimer = 0f;
     private Vector2Int firstTilePos = new Vector2Int(5, 18);
     private Vector2Int currentMinoPos;
     public SetTiles setTiles;
+    public GameScoreManager gameScoreManager;
     [SerializeField]private Transform FallenMinos;
     void Awake()
     {
+        if(gameScoreManager == null)Debug.LogError("GameScoreManager not found");
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
     }
     void Start()
@@ -29,6 +33,7 @@ public class GameManager : MonoBehaviour
     }
     void Update()
     {
+        if(!playing)return;
         MinoMovement();
         MinoRotation();
         MinoFall();
@@ -97,11 +102,11 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
-            fallTime = 0.1f;
+            fallTime = rawfalldownTime * Mathf.Pow(0.9f, gameScoreManager.level - 1);
         }
         else
         {
-            fallTime = 1f;
+            fallTime = rawfallTime * Mathf.Pow(0.9f, gameScoreManager.level - 1);
         }
         if(Input.GetKeyDown(KeyCode.Space))
         {
@@ -127,6 +132,10 @@ public class GameManager : MonoBehaviour
             if(isMoveAble(new Vector2Int(0, -1)))
             {
                 currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+                if (Input.GetKey(KeyCode.DownArrow))
+                {
+                    gameScoreManager.AddScore(10);
+                }
             }
             else
             {
@@ -179,6 +188,7 @@ public class GameManager : MonoBehaviour
     private void CheckLines()
     {
         bool isDelete = false;
+        int DeleteLineNum = 0;
         for(int i = 0; i < setTiles.ySize; i++)
         {
             if (HasLine(i))
@@ -187,11 +197,31 @@ public class GameManager : MonoBehaviour
                 DeleteLine(i);
                 RowDown(i);
                 i--;
+                DeleteLineNum++;
             }
         }
         if (isDelete)
         {
+            //Debug.Log(DeleteLineNum);
+            gameScoreManager.AddScore(DelLineScore(DeleteLineNum));
             DeleatEmptyObject();
+        }
+    }
+    private int DelLineScore(int lineCount)
+    {
+        if(lineCount <= 0)return 0;
+        else
+        {
+            return 1000 * lineCount + 100 * total(lineCount);
+        }
+        int total(int count)
+        {
+            int result = 0;
+            for(int i = 0; i < count; i++)
+            {
+                result += i;
+            }
+            return result;
         }
     }
     /// <summary>
