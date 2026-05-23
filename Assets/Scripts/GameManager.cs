@@ -73,14 +73,7 @@ public class GameManager : MonoBehaviour
         GameObject tempMino = holdMino;
         holdMino = currentMino;
         holdMino.GetComponent<Mino>().SetTransformPos(HoldMinoPos);
-        /*holdMino.transform.SetParent(HoldMinoPos);
-        holdMino.transform.position = HoldMinoPos.TransformPoint(Vector3.zero);
-        Mino holdMinoComponent = holdMino.GetComponent<Mino>();
-        for(int i = 0; i < holdMino.transform.childCount; i++)
-        {
-            Transform child = holdMino.transform.GetChild(i);
-            child.position = HoldMinoPos.TransformPoint(Vector2IntToN(MinoBlock.MinoTypeToBlocks(holdMinoComponent.minoType)[i].position));//setTiles.tilePosition(holdMino.GetComponent<Mino>().positions[i]);
-        }*/
+
         currentMino = tempMino;
         if(currentMino != null)
         {
@@ -129,7 +122,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            isRotateAble(-90);//currentMino.transform.Rotate(0, 0, -90);
+            isRotateAble(-90);
         }
     }
     void MinoFall()
@@ -211,7 +204,6 @@ public class GameManager : MonoBehaviour
         }
         if (isDelete)
         {
-            //Debug.Log(DeleteLineNum);
             gameScoreManager.AddScore(DelLineScore(DeleteLineNum));
             DeleatEmptyObject();
         }
@@ -263,7 +255,6 @@ public class GameManager : MonoBehaviour
             {
                 setTiles.tiles[x,yr].UpdateTile(setTiles.tiles[x,yr +1].tile);
                 setTiles.tiles[x,yr +1].tile = null;
-                //if(setTiles.tiles[x,yr].tile != null)setTiles.tiles[x,yr].tile.transform.position = setTiles.tilePosition(x, yr);
             }
         }
     }
@@ -271,7 +262,6 @@ public class GameManager : MonoBehaviour
     {
         foreach(Transform child in FallenMinos)
         {
-            //Debug.Log($"Deleting child: {child.name},{child.childCount}");
             if(child.childCount <= 0)
             {
                 Destroy(child.gameObject);
