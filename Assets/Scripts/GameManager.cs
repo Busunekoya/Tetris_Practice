@@ -91,16 +91,10 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            if(isMoveAble(new Vector2Int(-1,0)))
-            {
-                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
-            }
+            isMoveAble(new Vector2Int(-1,0));
         }else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if(isMoveAble(new Vector2Int(1, 0)))
-            {
-                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
-            }
+            isMoveAble(new Vector2Int(1, 0));
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -125,6 +119,9 @@ public class GameManager : MonoBehaviour
             isRotateAble(-90);
         }
     }
+    /// <summary>
+    /// ミノの落下
+    /// </summary>
     void MinoFall()
     {
         if(!playing)return;
@@ -133,7 +130,6 @@ public class GameManager : MonoBehaviour
         {
             if(isMoveAble(new Vector2Int(0, -1)))
             {
-                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
                 if (Input.GetKey(KeyCode.DownArrow))
                 {
                     gameScoreManager.AddScore(10);
@@ -159,29 +155,34 @@ public class GameManager : MonoBehaviour
             fallTimer += Time.deltaTime;
         }
     }
-    // Minoがステージ内に収まっているかの判定
+    /// <summary>
+    /// Minoがステージ内に収まっているかの判定
+    /// </summary>
+    /// <param name="move"></param>
+    /// <returns></returns>
     bool isMoveAble(Vector2Int move)
     {
-        Mino mino = currentMino.GetComponent<Mino>();
-        if(mino == null)return false;
+        //Mino mino = currentMino.GetComponent<Mino>();
+        if(currentMinoComponent == null)return false;
         else
         {
-            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
+            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(currentMinoComponent.minoType))
             {
-                Vector2Int rotatePosition = Mino.Rotate(mino.angle, minoBlock.position);
+                Vector2Int rotatePosition = Mino.Rotate(currentMinoComponent.angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + currentMinoPos + move;
                 if(!ValidMovement(blockPos))
                 {
                     return false;
                 }
             }
-            for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
+            /*for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
             {
                 Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
                 Vector2Int blockPos = rotatePosition + currentMinoPos + move;// - minPos;
                 mino.positions[i] = blockPos;
-            }
+            }*/
             currentMinoPos += move;
+            currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
             return true;
         }
     }
