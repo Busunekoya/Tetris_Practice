@@ -6,11 +6,11 @@ public class GameManager : MonoBehaviour
 {
     public GameObject[] MinoPrefabs = new GameObject[7];
     private GameObject currentMino;
+    private Mino currentMinoComponent;
     private GameObject nextMino;
     private GameObject holdMino = null;
     public Transform NextMinoPos;
     public Transform HoldMinoPos;
-    public Vector2 defaultMinoPosition;
     public bool playing = true;
     private bool holdable = true;
     private float rawfallTime = 1f;
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         if(gameScoreManager == null)Debug.LogError("GameScoreManager not found");
-        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], defaultMinoPosition, Quaternion.identity);
+        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
     }
     void Start()
     {
@@ -46,13 +46,15 @@ public class GameManager : MonoBehaviour
         if(currentMino != null)return;
         SetCurrentMino(nextMino);
         nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
+        nextMino.GetComponent<Mino>().SetTransformPos(NextMinoPos);
     }
     void SetCurrentMino(GameObject mino)
     {
         currentMino = mino;
+        currentMinoComponent = currentMino.GetComponent<Mino>();
         currentMino.transform.parent = null;
         currentMinoPos = firstTilePos;
-        currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+        currentMinoComponent.SetChildPos(firstTilePos, setTiles);
 
         if (!isMoveAble(Vector2Int.zero))
         {
@@ -70,8 +72,15 @@ public class GameManager : MonoBehaviour
         holdable = false;
         GameObject tempMino = holdMino;
         holdMino = currentMino;
-        holdMino.transform.SetParent(HoldMinoPos);
+        holdMino.GetComponent<Mino>().SetTransformPos(HoldMinoPos);
+        /*holdMino.transform.SetParent(HoldMinoPos);
         holdMino.transform.position = HoldMinoPos.TransformPoint(Vector3.zero);
+        Mino holdMinoComponent = holdMino.GetComponent<Mino>();
+        for(int i = 0; i < holdMino.transform.childCount; i++)
+        {
+            Transform child = holdMino.transform.GetChild(i);
+            child.position = HoldMinoPos.TransformPoint(Vector2IntToN(MinoBlock.MinoTypeToBlocks(holdMinoComponent.minoType)[i].position));//setTiles.tilePosition(holdMino.GetComponent<Mino>().positions[i]);
+        }*/
         currentMino = tempMino;
         if(currentMino != null)
         {
@@ -91,13 +100,13 @@ public class GameManager : MonoBehaviour
         {
             if(isMoveAble(new Vector2Int(-1,0)))
             {
-                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
             }
         }else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             if(isMoveAble(new Vector2Int(1, 0)))
             {
-                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
             }
         }
         if (Input.GetKey(KeyCode.DownArrow))
@@ -120,7 +129,7 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if(isRotateAble(-90))currentMino.transform.Rotate(0, 0, -90);
+            isRotateAble(-90);//currentMino.transform.Rotate(0, 0, -90);
         }
     }
     void MinoFall()
@@ -131,7 +140,7 @@ public class GameManager : MonoBehaviour
         {
             if(isMoveAble(new Vector2Int(0, -1)))
             {
-                currentMino.transform.position = setTiles.tilePosition(currentMinoPos);
+                currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
                 if (Input.GetKey(KeyCode.DownArrow))
                 {
                     gameScoreManager.AddScore(10);
@@ -148,6 +157,7 @@ public class GameManager : MonoBehaviour
                 {
                     holdable = true;
                 }
+                //Debug.Log(TileString());
             }
             fallTimer = fallTimer % fallTime;
         }
@@ -195,7 +205,6 @@ public class GameManager : MonoBehaviour
             {
                 isDelete = true;
                 DeleteLine(i);
-                RowDown(i);
                 i--;
                 DeleteLineNum++;
             }
@@ -250,6 +259,12 @@ public class GameManager : MonoBehaviour
         {
             Destroy(setTiles.tiles[x, y].tile);
             setTiles.tiles[x, y].tile = null;
+            for(int yr = y; yr < setTiles.ySize - 1; yr++)
+            {
+                setTiles.tiles[x,yr].UpdateTile(setTiles.tiles[x,yr +1].tile);
+                setTiles.tiles[x,yr +1].tile = null;
+                //if(setTiles.tiles[x,yr].tile != null)setTiles.tiles[x,yr].tile.transform.position = setTiles.tilePosition(x, yr);
+            }
         }
     }
     private void DeleatEmptyObject()
@@ -264,30 +279,14 @@ public class GameManager : MonoBehaviour
         }
     }
     /// <summary>
-    /// 行を下にずらす
-    /// </summary>
-    /// <param name="y">消した行</param>
-    private void RowDown(int y)
-    {
-        for(int i = 0; i < setTiles.xSize; i++)
-        {
-            for(int j = y; j < setTiles.ySize-1; j++)
-            {
-                setTiles.tiles[i,j].tile = setTiles.tiles[i,j+1].tile;
-                setTiles.tiles[i,j+1].tile = null;
-                if(setTiles.tiles[i,j].tile != null)setTiles.tiles[i,j].tile.transform.position = setTiles.tilePosition(i, j); //tiles[i,j].transform.position;
-            }
-        }
-    }
-    /// <summary>
     /// 回転可能か確かめる
     /// </summary>
     /// <param name="angle">回転角度</param>
     /// <returns></returns>
-    bool isRotateAble(int angle)
+    void isRotateAble(int angle)
     {
         Mino mino = currentMino.GetComponent<Mino>();
-        if(mino == null)return false;
+        if(mino == null)return;// false;
         else
         {
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
@@ -296,19 +295,12 @@ public class GameManager : MonoBehaviour
                 Vector2Int blockPos = rotatePosition + currentMinoPos;
                 if(!ValidMovement(blockPos))
                 {
-                    return false;
+                    return;
                 }
             }
 
-            mino.AddAngle(angle);
-
-            for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
-            {
-                Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
-                Vector2Int blockPos = rotatePosition + currentMinoPos;
-                mino.positions[i] = blockPos;
-            }
-            return true;
+            mino.AddAngle(angle, currentMinoPos, setTiles);
+            return;
         }
     }
     /// <summary>
@@ -335,5 +327,18 @@ public class GameManager : MonoBehaviour
             setTiles.tiles[mino.positions[i].x,mino.positions[i].y].FillTile(mino.transform.GetChild(i).gameObject);
         }
         minoObject.transform.SetParent(FallenMinos);
+    }
+    private string TileString()
+    {
+        string result = "";
+        for(int y = 0; y < setTiles.ySize; y++)
+        {
+            for(int x = 0; x < setTiles.xSize; x++)
+            {
+                result += setTiles.tiles[x, y].tile != null ? "X" : "0";
+            }
+            result += "\n";
+        }
+        return result;
     }
 }

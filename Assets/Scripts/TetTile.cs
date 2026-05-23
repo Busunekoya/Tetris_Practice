@@ -7,7 +7,7 @@ public class TetTile : MonoBehaviour
     /// <summary>
     /// 保持中のタイル
     /// </summary>
-    public GameObject tile{get;set;} = null;
+    public GameObject tile/*{get;set;}*/ = null;
     public void FillTile(GameObject hasTile)
     {
         if(tile != null)Debug.LogWarning($"Tile {this.transform.position} is already filled.");
@@ -19,5 +19,10 @@ public class TetTile : MonoBehaviour
         if(tile == null)Debug.LogWarning($"Tile {this.transform.position} is already clear.");
         tile = null;
         //isFilled = false;
+    }
+    public void UpdateTile(GameObject newTile)
+    {
+        tile = newTile;
+        if(tile != null)tile.transform.position = this.transform.position;
     }
 }
