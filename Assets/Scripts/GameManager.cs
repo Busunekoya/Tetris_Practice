@@ -175,12 +175,7 @@ public class GameManager : MonoBehaviour
                     return false;
                 }
             }
-            /*for(int i = 0; i < MinoBlock.MinoTypeToBlocks(mino.minoType).Length; i++)
-            {
-                Vector2Int rotatePosition = Mino.Rotate(mino.angle, MinoBlock.MinoTypeToBlocks(mino.minoType)[i].position);
-                Vector2Int blockPos = rotatePosition + currentMinoPos + move;// - minPos;
-                mino.positions[i] = blockPos;
-            }*/
+
             currentMinoPos += move;
             currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
             return true;
