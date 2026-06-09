@@ -169,3 +169,7 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# ZIPダウンロード時に含めないファイル・フォルダを指定
+.gitattributes  export-ignore
+.gitignore export-ignore
