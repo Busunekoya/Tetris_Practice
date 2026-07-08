@@ -225,10 +225,11 @@ public class GameManager : MonoBehaviour
                     gameScoreManager.AddScore(10);
                 }
             }
-            else
+            else    //下方向に動かせないときの処理
             {
                 //ミノをTileに追加するメソッドを動かす
                 AddToTile(currentMino);
+                //揃ったレーンがあるか調べる
                 CheckLines();
                 //ミノが落ちきったときの処理
                 currentMino = null;
@@ -239,10 +240,12 @@ public class GameManager : MonoBehaviour
                 }
                 //Debug.Log(TileString());
             }
+            //fallTimerの値をfallTimeを超えないぐらいに再設定する
             fallTimer = fallTimer % fallTime;
         }
         else
         {
+            //fallTimerの値にdeltaTimeを足す
             fallTimer += Time.deltaTime;
         }
     }
@@ -254,21 +257,27 @@ public class GameManager : MonoBehaviour
     bool isMoveAble(Vector2Int move)
     {
         //Mino mino = currentMino.GetComponent<Mino>();
+        //currentMinoComponentがあることを確認する
         if(currentMinoComponent == null)return false;
         else
         {
+            //すべてのミノブロックに対し動かせるかを確認する
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(currentMinoComponent.minoType))
             {
                 Vector2Int rotatePosition = Mino.Rotate(currentMinoComponent.angle, minoBlock.position);
+                //blockPosに引数分足した時の座標を調べる
                 Vector2Int blockPos = rotatePosition + currentMinoPos + move;
+                //範囲内か調べ、範囲外だった時falseを返す
                 if(!ValidMovement(blockPos))
                 {
                     return false;
                 }
             }
-
+            //returnしなかったとき、動かせることを示すため、引数分動かす
             currentMinoPos += move;
+            //位置を更新する
             currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
+            //trueを返す
             return true;
         }
     }
@@ -277,24 +286,33 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void CheckLines()
     {
-        bool isDelete = false;
+        //消したレーン数を数えるint型
         int DeleteLineNum = 0;
+        //0行目からy最大サイズまで繰り返す
         for(int i = 0; i < setTiles.ySize; i++)
         {
+            //もし、i行目がすべてそろっているのなら
             if (HasLine(i))
             {
-                isDelete = true;
+                //isDeleteをtrueにする
+                //isDelete = true;
+                //i行目を消す
                 DeleteLine(i);
                 i--;
+                //消したレーン数を増やす
                 DeleteLineNum++;
             }
         }
-        if (isDelete)
+        //消したレーンがあるのなら
+        if (DeleteLineNum > 0)
         {
+            //消したレーン数に応じて消す
             gameScoreManager.AddScore(DelLineScore(DeleteLineNum));
-            DeleatEmptyObject();
+            //空のゲームオブジェクトを消す
+            DeleteEmptyObject();
         }
     }
+    //スコア計算
     private int DelLineScore(int lineCount)
     {
         if(lineCount <= 0)return 0;
@@ -319,6 +337,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private bool HasLine(int y)
     {
+        //setTiles.tilesのy行目のタイルがすべてあるのならtrueを返し、1つでも抜けているのならfalseを返す
         for(int x = 0; x < setTiles.xSize; x++)
         {
             if(setTiles.tiles[x, y].tile == null)
@@ -334,18 +353,21 @@ public class GameManager : MonoBehaviour
     /// <param name="y">消す行</param>
     private void DeleteLine(int y)
     {
+        //y行目のタイルを全て消す
         for(int x = 0; x < setTiles.xSize; x++)
         {
             Destroy(setTiles.tiles[x, y].tile);
-            setTiles.tiles[x, y].tile = null;
+            setTiles.tiles[x, y].ClearTile();
+            //yよりも上のタイルを1段ずつ下にずらす
             for(int yr = y; yr < setTiles.ySize - 1; yr++)
             {
                 setTiles.tiles[x,yr].UpdateTile(setTiles.tiles[x,yr +1].tile);
-                setTiles.tiles[x,yr +1].tile = null;
+                setTiles.tiles[x,yr +1].ClearTile();
             }
         }
     }
-    private void DeleatEmptyObject()
+    //空のゲームオブジェクトを削除する
+    private void DeleteEmptyObject()
     {
         foreach(Transform child in FallenMinos)
         {
@@ -362,21 +384,22 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     void isRotateAble(int angle)
     {
-        Mino mino = currentMino.GetComponent<Mino>();
-        if(mino == null)return;// false;
+        if(currentMinoComponent == null)return;// false;
         else
         {
-            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(mino.minoType))
+            foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(currentMinoComponent.minoType))
             {
-                Vector2Int rotatePosition = Mino.Rotate(mino.angle +angle, minoBlock.position);
+                //回転後の座標を求める
+                Vector2Int rotatePosition = Mino.Rotate(currentMinoComponent.angle +angle, minoBlock.position);
                 Vector2Int blockPos = rotatePosition + currentMinoPos;
+                //回転後の座標が範囲内か調べ、範囲外なら処理を終了する
                 if(!ValidMovement(blockPos))
                 {
                     return;
                 }
             }
 
-            mino.AddAngle(angle, currentMinoPos, setTiles);
+            currentMinoComponent.AddAngle(angle, currentMinoPos, setTiles);
             return;
         }
     }
@@ -391,6 +414,7 @@ public class GameManager : MonoBehaviour
         if(setTiles.tiles[blockPos.x, blockPos.y].tile != null)return false;
         else return true;
     }
+    //引数のミノの子オブジェクトをsetTilesに登録する
     void AddToTile(GameObject minoObject)
     {
         Mino mino = minoObject.GetComponent<Mino>();
@@ -405,6 +429,7 @@ public class GameManager : MonoBehaviour
         }
         minoObject.transform.SetParent(FallenMinos);
     }
+    //デバッグ用、文字列で現在のタイル状況を調べる
     private string TileString()
     {
         string result = "";
