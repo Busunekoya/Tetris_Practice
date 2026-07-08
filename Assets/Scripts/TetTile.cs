@@ -16,7 +16,7 @@ public class TetTile : MonoBehaviour
     }
     public void ClearTile()
     {
-        if(tile == null)Debug.LogWarning($"Tile {this.transform.position} is already clear.");
+        //if(tile == null)Debug.LogWarning($"Tile {this.transform.position} is already clear.");
         tile = null;
     }
     public void UpdateTile(GameObject newTile)
