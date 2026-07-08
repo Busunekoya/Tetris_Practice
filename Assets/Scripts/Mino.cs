@@ -9,7 +9,7 @@ public class Mino : MonoBehaviour
     //現在の角度
     public int angle{get;set;} = 0;
     //子オブジェクトの座標
-    public Vector2Int[] positions{get;set;} = new Vector2Int[4];
+    public Vector2Int[] positions{get;set;}// = new Vector2Int[4];
     /// <summary>
     /// 角度を加える
     /// </summary>
@@ -30,28 +30,27 @@ public class Mino : MonoBehaviour
     public void SetChildPos(Vector2Int currentMinoPos,SetTiles setTiles)
     {
         //現在の座標をtilePositionの座標に設定する
-        transform.position = setTiles.tilePosition(currentMinoPos);
+
         for(int i = 0; i < 4; i++)
         {
             //回転後の座標を取得する
-            Vector2Int rotatePos = Mino.Rotate(angle, MinoBlock.MinoTypeToBlocks(minoType)[i].position);
+
             //positionsの値を変更する
-            positions[i] = rotatePos + currentMinoPos;
+
             //子オブジェクトのpositionをタイル座標に対応した値に更新する
-            transform.GetChild(i).position = setTiles.tilePosition(positions[i]);
+
         }
     }
     public void SetTransformPos(Transform parentTransform)
     {
         //親を引数に更新する
-        transform.parent = parentTransform;
-        //座標を親の0,0に設定する
-        transform.position = parentTransform.TransformPoint(Vector2.zero);
 
-        for(int i = 0; i < 4; i++)
+        //座標を親の0,0に設定する
+
+        for(int i = 0; i < transform.childCount; i++)
         {
             //子オブジェクトの座標を更新する
-            transform.GetChild(i).position = parentTransform.TransformPoint(Vector2IntToVector2(MinoBlock.MinoTypeToBlocks(minoType)[i].position));
+
         }
     }
     //Vector2IntをVector2に変換する

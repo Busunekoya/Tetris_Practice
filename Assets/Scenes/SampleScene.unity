@@ -1141,21 +1141,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b6dcfee6ba9f824fb9b3f5f364b6a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinoPrefabs:
-  - {fileID: 8009342449210983623, guid: 60673684dd10c174cab9223ee4bb03f3, type: 3}
-  - {fileID: 9122577183312417372, guid: b0aa736799ba8d441b9fd055785be859, type: 3}
-  - {fileID: 1352846457330567944, guid: 854661915f7b3f94c90785016ad56650, type: 3}
-  - {fileID: 8050835341099379906, guid: 57ed102d8c4f9b743acc8be7c46b4215, type: 3}
-  - {fileID: 6143182347006940209, guid: c909062aa1c5b1242a0b11a9fb7d0d49, type: 3}
-  - {fileID: 4061935803341540290, guid: 71c8141bf9cfa474e840e62850feaa35, type: 3}
-  - {fileID: 8474979131993501300, guid: 041c6309a84e0ff41a9e4293c34c2cb1, type: 3}
-  NextMinoPos: {fileID: 1312683816}
-  HoldMinoPos: {fileID: 836011337}
-  defaultMinoPosition: {x: -5, y: 8}
-  playing: 1
-  setTiles: {fileID: 1107995109}
-  gameScoreManager: {fileID: 1107995111}
-  FallenMinos: {fileID: 100687367}
+  MinoPrefabs: []
+  NextMinoPos: {fileID: 0}
+  HoldMinoPos: {fileID: 0}
+  playing: 0
+  setTiles: {fileID: 0}
+  gameScoreManager: {fileID: 0}
+  FallenMinos: {fileID: 0}
 --- !u!114 &1107995111
 MonoBehaviour:
   m_ObjectHideFlags: 0

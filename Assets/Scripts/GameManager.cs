@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// テトリスのミノを入れる配列
     /// </summary>
-    public GameObject[] MinoPrefabs = new GameObject[7];
+    public GameObject[] MinoPrefabs;
     /// <summary>
     /// 動かすミノ
     /// </summary>
@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// ホールド中のミノ
     /// </summary>
-    private GameObject holdMino = null;
+    private GameObject holdMino;
     /// <summary>
     /// 次のミノを表示する場所
     /// </summary>
@@ -35,11 +35,11 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// ゲーム中か
     /// </summary>
-    public bool playing = true;
+    public bool playing;
     /// <summary>
     /// 保持可能か
     /// </summary>
-    private bool holdable = true;
+    private bool holdable;
     /// <summary>
     /// 落ちるまでの時間設定
     /// </summary>
@@ -76,14 +76,12 @@ public class GameManager : MonoBehaviour
     /// 落ち切ったミノを保存するTransform
     /// </summary>
     [SerializeField]private Transform FallenMinos;
-    /// <summary>
-    /// 1. ゲームスコアマネージャーの存在を確認する
-    /// 2. nextMinoを設定する
-    /// </summary>
     void Awake()
     {
-        if(gameScoreManager == null)Debug.LogError("GameScoreManager not found");
-        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
+        //ゲームスコアマネージャーの存在を確認する
+
+        //nextMinoを設定する
+
     }
     /// <summary>
     /// SetNextMinoメソッドを動かす
@@ -97,10 +95,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if(!playing)return;
-        MinoMovement();
-        MinoRotation();
-        MinoFall();
+
+
+
+
     }
     /// <summary>
     /// currentMinoがnullであることを確認し、SetCurrentMinoメソッドを動かす
@@ -110,31 +108,31 @@ public class GameManager : MonoBehaviour
     void SetNextMino()
     {
         //currentMinoがnullであることを確認
-        if(currentMino != null)return;
+
         //SetCurrentMinoメソッドを動かす
-        SetCurrentMino(nextMino);
+
         //nextMinoはMinoPrefabsの中からランダムに選択されるようにし、親はNextMinoPosにする
-        nextMino = Instantiate(MinoPrefabs[Random.Range(0, MinoPrefabs.Length)], NextMinoPos);
+
         //nextMinoのMinoコンポーネントからSetTransformPosメソッドを動かし、NextMinoPosの座標を基準にミノを設定する
-        nextMino.GetComponent<Mino>().SetTransformPos(NextMinoPos);
+
     }
     void SetCurrentMino(GameObject mino)
     {
         //currentMinoを引数のminoとする
-        currentMino = mino;
+
         //currentMinoComponentをcurrentMinoに再設定する
-        currentMinoComponent = currentMino.GetComponent<Mino>();
+
         //currentMinoの親を外す
-        currentMino.transform.parent = null;
+
         //currentMinoの座標を初期位置とする
-        currentMinoPos = firstTilePos;
+
         //MinoComponentより、SetChildPosコンポーネントを動かし、setTilesのfirstTilePosの位置を基準とする
-        currentMinoComponent.SetChildPos(firstTilePos, setTiles);
+
         //もし動かせないのなら、ゲームオーバーとする
-        if (!isMoveAble(Vector2Int.zero))
-        {
-            GameOver();
-        }
+
+
+
+
     }
     /// <summary>
     /// ゲームオーバー時の処理
@@ -142,30 +140,30 @@ public class GameManager : MonoBehaviour
     void GameOver()
     {
         //playingをfalseとする
-        playing = false;
+
         Debug.Log("Game Over");
     }
     //ミノを交代する
     void SwitchMino()
     {
         //holdableがtrueであり、currentMinoがnullではないことを確認する
-        if(!holdable || currentMino == null) return;
+
         //holdableをfalseにする(何回も保持を変更することを防ぐため)
-        holdable = false;
+
         //holdMinoとcurrentMinoを入れ替える
-        GameObject tempMino = holdMino;
-        holdMino = currentMino;
-        holdMino.GetComponent<Mino>().SetTransformPos(HoldMinoPos);
-        currentMino = tempMino;
+
+
+
+
         //currentMinoがあるのなら、SetCurrentMinoで再設定し、ないのなら次のミノを設定する
-        if(currentMino != null)
-        {
-            SetCurrentMino(currentMino);
-        }
-        else
-        {
-            SetNextMino();
-        }
+
+
+
+
+
+
+
+
     }
     /// <summary>
     /// ミノの移動
@@ -175,10 +173,11 @@ public class GameManager : MonoBehaviour
         //左右キーが押された時、それぞれ左右に1マスずつ動かす。ただし、どのブロックもはみ出さないようにする
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            isMoveAble(new Vector2Int(-1,0));
-        }else if (Input.GetKeyDown(KeyCode.RightArrow))
+            
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            isMoveAble(new Vector2Int(1, 0));
+
         }
         //下キーが押されているかどうかでそれぞれ対応する値に設定する
         if (Input.GetKey(KeyCode.DownArrow))
@@ -203,7 +202,7 @@ public class GameManager : MonoBehaviour
         //上キーが押された時、-90°回転させる、ただし、はみ出すようであれば回転させない
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            isRotateAble(-90);
+            
         }
     }
     /// <summary>
@@ -212,7 +211,7 @@ public class GameManager : MonoBehaviour
     void MinoFall()
     {
         //プレイ中であることを確認する
-        if(!playing)return;
+
         //もし、fallTimerの値がfallTimeよりも大きいならば、下方向に移動する
         if(fallTimer >= fallTime)
         {
@@ -256,7 +255,6 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     bool isMoveAble(Vector2Int move)
     {
-        //Mino mino = currentMino.GetComponent<Mino>();
         //currentMinoComponentがあることを確認する
         if(currentMinoComponent == null)return false;
         else
@@ -264,17 +262,17 @@ public class GameManager : MonoBehaviour
             //すべてのミノブロックに対し動かせるかを確認する
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(currentMinoComponent.minoType))
             {
-                Vector2Int rotatePosition = Mino.Rotate(currentMinoComponent.angle, minoBlock.position);
+
                 //blockPosに引数分足した時の座標を調べる
-                Vector2Int blockPos = rotatePosition + currentMinoPos + move;
+
                 //範囲内か調べ、範囲外だった時falseを返す
-                if(!ValidMovement(blockPos))
-                {
-                    return false;
-                }
+
+
+
+
             }
             //returnしなかったとき、動かせることを示すため、引数分動かす
-            currentMinoPos += move;
+
             //位置を更新する
             currentMinoComponent.SetChildPos(currentMinoPos,setTiles);
             //trueを返す
@@ -294,8 +292,6 @@ public class GameManager : MonoBehaviour
             //もし、i行目がすべてそろっているのなら
             if (HasLine(i))
             {
-                //isDeleteをtrueにする
-                //isDelete = true;
                 //i行目を消す
                 DeleteLine(i);
                 i--;
@@ -338,14 +334,7 @@ public class GameManager : MonoBehaviour
     private bool HasLine(int y)
     {
         //setTiles.tilesのy行目のタイルがすべてあるのならtrueを返し、1つでも抜けているのならfalseを返す
-        for(int x = 0; x < setTiles.xSize; x++)
-        {
-            if(setTiles.tiles[x, y].tile == null)
-            {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
     /// <summary>
     /// 行を消す
@@ -356,14 +345,16 @@ public class GameManager : MonoBehaviour
         //y行目のタイルを全て消す
         for(int x = 0; x < setTiles.xSize; x++)
         {
-            Destroy(setTiles.tiles[x, y].tile);
-            setTiles.tiles[x, y].ClearTile();
+            //tileにあるゲームオブジェクトを削除する
+
+            //tileのゲームオブジェクトを空にする
+
             //yよりも上のタイルを1段ずつ下にずらす
-            for(int yr = y; yr < setTiles.ySize - 1; yr++)
-            {
-                setTiles.tiles[x,yr].UpdateTile(setTiles.tiles[x,yr +1].tile);
-                setTiles.tiles[x,yr +1].ClearTile();
-            }
+
+
+
+
+
         }
     }
     //空のゲームオブジェクトを削除する
@@ -384,23 +375,22 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     void isRotateAble(int angle)
     {
-        if(currentMinoComponent == null)return;// false;
+        if(currentMinoComponent == null)return;
         else
         {
             foreach(MinoBlock minoBlock in MinoBlock.MinoTypeToBlocks(currentMinoComponent.minoType))
             {
                 //回転後の座標を求める
-                Vector2Int rotatePosition = Mino.Rotate(currentMinoComponent.angle +angle, minoBlock.position);
-                Vector2Int blockPos = rotatePosition + currentMinoPos;
+
+
                 //回転後の座標が範囲内か調べ、範囲外なら処理を終了する
-                if(!ValidMovement(blockPos))
-                {
-                    return;
-                }
+
+
+
+
             }
 
             currentMinoComponent.AddAngle(angle, currentMinoPos, setTiles);
-            return;
         }
     }
     /// <summary>
@@ -410,9 +400,9 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     bool ValidMovement(Vector2Int blockPos)
     {
-        if(blockPos.x < 0 || blockPos.x >= setTiles.xSize || blockPos.y < 0 )return false;
-        if(setTiles.tiles[blockPos.x, blockPos.y].tile != null)return false;
-        else return true;
+
+
+        return false;
     }
     //引数のミノの子オブジェクトをsetTilesに登録する
     void AddToTile(GameObject minoObject)
